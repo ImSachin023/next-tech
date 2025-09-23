@@ -19,13 +19,11 @@ export const getEnvironmentInfo = () => {
   const env = process.env.REACT_APP_ENV || process.env.NODE_ENV;
   const envName = process.env.REACT_APP_ENV_NAME || env;
   const debugMode = process.env.REACT_APP_DEBUG_MODE === 'true';
-  const mockPayments = process.env.REACT_APP_MOCK_PAYMENTS === 'true';
   
   return {
     env,
     envName,
     debugMode,
-    mockPayments,
     isDevelopment: env === 'development',
     isTest: env === 'test',
     isProduction: env === 'production'

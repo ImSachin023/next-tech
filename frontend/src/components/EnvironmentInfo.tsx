@@ -68,13 +68,6 @@ const EnvironmentInfo: React.FC = () => {
             </div>
             
             <div className="flex justify-between">
-              <span className="text-gray-600">Mock Payments:</span>
-              <span className={envInfo.mockPayments ? 'text-yellow-600' : 'text-green-600'}>
-                {envInfo.mockPayments ? 'ENABLED' : 'DISABLED'}
-              </span>
-            </div>
-            
-            <div className="flex justify-between">
               <span className="text-gray-600">Node ENV:</span>
               <span className="font-mono text-xs">
                 {process.env.NODE_ENV}
@@ -83,7 +76,7 @@ const EnvironmentInfo: React.FC = () => {
             
             {envInfo.isDevelopment && (
               <div className="mt-3 p-2 bg-green-50 border border-green-200 rounded text-xs">
-                <strong>Development Mode:</strong> Full debugging enabled, mock data available
+                <strong>Development Mode:</strong> Full debugging enabled
               </div>
             )}
             

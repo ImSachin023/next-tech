@@ -10,17 +10,8 @@ const {
   bulkUpdateProducts,
   searchProducts
 } = require('../controllers/productController');
-// Use mock-friendly auth in development or when explicitly enabled
-const useAuthFallback =
-  process.env.USE_AUTH_FALLBACK === 'true' ||
-  (process.env.NODE_ENV && process.env.NODE_ENV !== 'production') ||
-  process.env.MOCK_MODE === 'true';
-
-const authModule = useAuthFallback
-  ? require('../middleware/authFallback')
-  : require('../middleware/auth');
-
-const { auth, seller, adminAuth } = authModule;
+// Always use real auth middleware (no fallback)
+const { auth, seller, adminAuth } = require('../middleware/auth');
 const { ValidationRules, handleValidationErrors, rateLimits } = require('../middleware/validation');
 
 const router = express.Router();
