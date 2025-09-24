@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import axiosInstance from '../utils/axiosConfig';
-import { mockOrderService } from '../services/mockOrderService';
 import { formatCurrency } from '../utils';
 
 // Define interfaces for order data structure (consistent with OrderDetailPage)
@@ -114,15 +113,8 @@ const OrdersPage: React.FC = () => {
         const apiOrders = res.data || [];
         setOrders(apiOrders);
       } catch (error: any) {
-        // If unauthorized or server not available, fallback to mock orders
-        if (error?.response?.status === 401 || !error?.response || error?.response?.status >= 500) {
-          try {
-            const mockOrders = await mockOrderService.listMy();
-            setOrders(mockOrders as any);
-          } catch (e) {
-            setOrders([]);
-          }
-        }
+        // On error, clear orders and surface the issue
+        setOrders([]);
         console.error('Failed to fetch orders:', error);
       } finally {
         if (!silent) setIsLoading(false);

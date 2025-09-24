@@ -48,43 +48,7 @@ axiosInstance.interceptors.request.use(
       console.log('🔑 Axios: Token found directly in localStorage:', token.substring(0, 20) + '...');
     }
 
-    // Development fallback: synthesize mock vendor token if user is a seller
-    if (!token) {
-      try {
-        const raw = localStorage.getItem('user');
-        if (raw) {
-          const parsed = JSON.parse(raw);
-          const userObj = parsed.user || parsed; // support wrapped or direct
-          if (userObj?.role === 'seller') {
-            const vendorId = userObj._id || 'vendor_1';
-            token = `mock_vendor_token_${vendorId}`;
-            localStorage.setItem('token', token);
-            console.log('🔧 Axios: Generated mock vendor token for seller:', vendorId);
-          }
-        }
-      } catch (e) {
-        console.warn('Axios: Failed to parse user for fallback token');
-      }
-    }
-
-    // If this is a vendor-protected mutating request and user is a seller, force a vendor token
-    try {
-      const urlPath = (config.url || '').toString();
-      const method = (config.method || 'get').toLowerCase();
-      const isMutating = method !== 'get';
-      const targetsVendorApis = urlPath.startsWith('/products') || urlPath.startsWith('/vendor');
-      const raw = localStorage.getItem('user');
-      const parsed = raw ? JSON.parse(raw) : null;
-      const userObj = parsed?.user || parsed;
-      const isSeller = userObj?.role === 'seller';
-      const currentIsVendorToken = typeof token === 'string' && token.startsWith('mock_vendor_token_');
-      if (isMutating && targetsVendorApis && isSeller && !currentIsVendorToken) {
-        const vendorId = userObj._id || 'vendor_1';
-        token = `mock_vendor_token_${vendorId}`;
-        localStorage.setItem('token', token);
-        console.log('🛡️ Axios: Overriding token for vendor mutating request as seller:', vendorId, urlPath);
-      }
-    } catch {}
+    // No mock token synthesis; require real token
 
     // Add token to headers if available
     if (token) {

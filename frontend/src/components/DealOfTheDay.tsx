@@ -116,7 +116,59 @@ const DealOfTheDay: React.FC<DealOfTheDayProps> = ({ deals, onViewAll }) => {
     return time.toString().padStart(2, '0');
   };
 
-  if (!deals.length) return null;
+  // Show blank placeholder card as requested
+if (true) return (
+  <div className="bg-gradient-to-r from-red-500 via-pink-500 to-purple-600 rounded-2xl p-6 text-white relative overflow-hidden">
+    {/* Background Pattern */}
+    <div className="absolute inset-0 opacity-10">
+      <div className="absolute top-0 left-0 w-32 h-32 bg-white rounded-full -translate-x-16 -translate-y-16"></div>
+      <div className="absolute bottom-0 right-0 w-24 h-24 bg-white rounded-full translate-x-12 translate-y-12"></div>
+      <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-white rounded-full"></div>
+    </div>
+
+    <div className="relative z-10">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center space-x-3">
+          <div className="bg-white bg-opacity-20 p-2 rounded-lg">
+            <Flame className="h-6 w-6 text-white" />
+          </div>
+          <div>
+            <h2 className="text-2xl font-bold">Deal of the Day</h2>
+            <p className="text-white text-opacity-80">Limited time offers</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Placeholder content */}
+      <div className="grid md:grid-cols-2 gap-6 items-center">
+        {/* Placeholder Image */}
+        <div className="relative">
+          <div className="aspect-square bg-white bg-opacity-10 rounded-2xl p-6 backdrop-blur-sm">
+            <div className="w-full h-full rounded-lg bg-white bg-opacity-20 animate-pulse"></div>
+          </div>
+        </div>
+
+        {/* Placeholder Details */}
+        <div className="space-y-4">
+          <div className="h-6 w-2/3 bg-white bg-opacity-30 rounded animate-pulse"></div>
+          <div className="h-4 w-1/2 bg-white bg-opacity-20 rounded animate-pulse"></div>
+          <div className="h-8 w-1/3 bg-white bg-opacity-30 rounded animate-pulse"></div>
+          <div className="bg-white bg-opacity-20 rounded-lg p-4 backdrop-blur-sm">
+            <div className="h-10 bg-white bg-opacity-30 rounded animate-pulse"></div>
+          </div>
+          <div className="bg-white bg-opacity-20 rounded-lg p-4 backdrop-blur-sm">
+            <div className="h-2 bg-white bg-opacity-30 rounded animate-pulse"></div>
+          </div>
+          <div className="flex space-x-3">
+            <div className="flex-1 h-12 bg-white bg-opacity-30 rounded animate-pulse"></div>
+            <div className="w-12 h-12 bg-white bg-opacity-20 rounded animate-pulse"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+);
 
   return (
     <div className="bg-gradient-to-r from-red-500 via-pink-500 to-purple-600 rounded-2xl p-6 text-white relative overflow-hidden">

@@ -43,8 +43,7 @@ const CALLBACK = process.env.PAYTM_CALLBACK;
 connectDB();
 
 // Initialize cache service
-const CacheService = require('./services/cacheService');
-const cacheService = new CacheService();
+const cacheService = require('./services/cacheService');
 
 // Respect Redis disable flags; skip test entirely when disabled
 if (process.env.DISABLE_REDIS === 'true' || process.env.REDIS_DISABLED === 'true') {

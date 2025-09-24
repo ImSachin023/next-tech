@@ -8,7 +8,6 @@ import PaymentSelector from '../components/PaymentSelector';
 import paymentService from '../services/paymentService';
 import { clearCart } from '../store/slices/cartSlice';
 import { createOrder } from '../store/slices/orderSlice';
-import { mockOrderService } from '../services/mockOrderService';
 import toast from 'react-hot-toast';
 
 const PaymentPage: React.FC = () => {
@@ -78,54 +77,26 @@ const PaymentPage: React.FC = () => {
         return;
       }
 
-      // If items contain placeholders or invalid ObjectIds, switch to mock order creation
-      const hasInvalidId = items.some((i: any) => !i?.product?._id || !/^[a-f\d]{24}$/i.test(String(i.product._id)));
-
       // Normalize payment method to backend-supported values
       const allowedMethods = ['razorpay', 'paypal', 'stripe', 'googlepay', 'phonepe', 'upi', 'cod'] as const;
       const method = allowedMethods.includes(result?.paymentMethod) ? result.paymentMethod : 'cod';
 
-      if (hasInvalidId) {
-        // Build mock order payload using current cart
-        const mockOrder = await mockOrderService.create({
-          orderItems: items.map((item: any) => ({
-            product: {
-              _id: String(item.product._id || 'mock_' + Math.random().toString(36).slice(2)),
-              name: item.product.name || `Product ${String(item.product._id).slice(0,6)}`,
-              price: item.product.price,
-              images: item.product.images || [{ url: '/placeholder.png' }],
-            },
-            quantity: item.quantity,
-            price: item.product.price,
-          })),
-          shippingAddress: shippingAddress,
-          paymentMethod: method,
-          paymentResult: result,
-          totalPrice: totalAmount,
-        });
-        window.dispatchEvent(new Event('ordersUpdated'));
-        toast.success('Order placed successfully (mock).');
-        // fallthrough to clearing cart below
-      } else {
-        const orderData = {
-          orderItems: items.map((item: any) => ({
-            product: item.product._id,
-            quantity: item.quantity,
-            price: item.product.price,
-          })),
-          shippingAddress: shippingAddress,
-          paymentMethod: method,
-          paymentResult: result,
-          totalPrice: totalAmount,
-        };
+      const orderData = {
+        orderItems: items.map((item: any) => ({
+          product: item.product._id,
+          quantity: item.quantity,
+          price: item.product.price,
+        })),
+        shippingAddress: shippingAddress,
+        paymentMethod: method,
+        paymentResult: result,
+        totalPrice: totalAmount,
+      };
 
-        const created = await dispatch(createOrder(orderData)).unwrap();
-        // Notify orders first so /orders picks it up immediately
-        window.dispatchEvent(new Event('ordersUpdated'));
-        toast.success('Order placed successfully!');
-        // Navigate to order detail
-        navigate(`/orders/${created._id}`);
-      }
+      const created = await dispatch(createOrder(orderData)).unwrap();
+      window.dispatchEvent(new Event('ordersUpdated'));
+      toast.success('Order placed successfully!');
+      navigate(`/orders/${created._id}`);
     } catch (e: any) {
       console.error('Failed to create order after payment:', e);
       const msg = typeof e === 'string' ? e : (e?.message || 'Order creation failed. Please check My Orders.');

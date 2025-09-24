@@ -133,8 +133,19 @@ export const getTimeRemaining = (endTime: string | Date): {
   minutes: number;
   seconds: number;
 } => {
+  // Guard against undefined/null or invalid date inputs
+  if (!endTime) {
+    return { total: 0, days: 0, hours: 0, minutes: 0, seconds: 0 };
+  }
+
   const endDate = typeof endTime === 'string' ? new Date(endTime) : endTime;
-  const total = endDate.getTime() - Date.now();
+  const endMs = endDate instanceof Date ? endDate.getTime() : NaN;
+
+  if (Number.isNaN(endMs)) {
+    return { total: 0, days: 0, hours: 0, minutes: 0, seconds: 0 };
+  }
+
+  const total = endMs - Date.now();
   
   if (total <= 0) {
     return { total: 0, days: 0, hours: 0, minutes: 0, seconds: 0 };

@@ -110,17 +110,17 @@ const HomePage: React.FC = () => {
   const featuredProducts = filteredProducts.slice(0, 8);
 
   // Mock flash sale data
-  const flashSaleProducts = (products || []).slice(0, 4).map((product: any) => ({
-    ...product,
-    image: product.images && product.images.length > 0 ? product.images[0].url : '',
-    originalPrice: product.price * 1.3,
-    salePrice: product.price,
-    discount: 23,
-    stock: 50,
-    sold: 30,
-    rating: 4.5,
-    reviews: 120
-  }));
+  // const flashSaleProducts = (products || []).slice(0, 4).map((product: any) => ({
+  //   ...product,
+  //   image: product.images && product.images.length > 0 ? product.images[0].url : '',
+  //   originalPrice: product.price * 1.3,
+  //   salePrice: product.price,
+  //   discount: 23,
+  //   stock: 50,
+  //   sold: 30,
+  //   rating: 4.5,
+  //   reviews: 120
+  // }));
 
   const flashSaleEndTime = new Date();
   flashSaleEndTime.setHours(flashSaleEndTime.getHours() + 2); // 2 hours from now
@@ -266,25 +266,23 @@ const HomePage: React.FC = () => {
       <QuickCommerceFeatures />
 
       {/* Deal of the Day */}
-      {dealProducts.length > 0 && (
-        <section className="section-padding bg-gray-50">
-          <div className="container-modern">
-            <DealOfTheDay 
-              deals={dealProducts}
-              onViewAll={() => window.location.href = '/deals'}
-            />
-          </div>
-        </section>
-      )}
+      {/* <section className="section-padding bg-gray-50">
+        <div className="container-modern">
+          <DealOfTheDay 
+            deals={dealProducts}
+            onViewAll={() => window.location.href = '/deals'}
+          />
+        </div>
+      </section> */}
 
       {/* Flash Sale Section */}
-      {flashSaleProducts.length > 0 && (
+      {/* {flashSaleProducts.length > 0 && (
         <FlashSale
           endTime={flashSaleEndTime}
           products={flashSaleProducts}
           title="⚡ Lightning Deals"
         />
-      )}
+      )} */}
 
       {/* Category Quick Browse */}
       <CategoryQuickBrowse />

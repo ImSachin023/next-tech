@@ -5,7 +5,6 @@ import React, { useEffect, useState } from 'react';
 // within a routing environment.
 import { Link, useParams } from 'react-router-dom';
 import axiosInstance from '../utils/axiosConfig';
-import { mockOrderService } from '../services/mockOrderService';
 import { formatCurrency } from '../utils';
 
 // Define interfaces for order data structure (extended for detail page)
@@ -113,7 +112,7 @@ const OrderDetailPage: React.FC = () => {
   const [currentOrder, setCurrentOrder] = useState<Order | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  // Fetch order by ID from API, fallback to mock storage
+  // Fetch order by ID from API
   useEffect(() => {
     let isMounted = true;
     async function fetchOrder() {
@@ -143,39 +142,9 @@ const OrderDetailPage: React.FC = () => {
         };
         if (isMounted) setCurrentOrder(normalized);
       } catch (error: any) {
-        // Fallback to mock storage if 401/server error/local dev
-        try {
-          const mock = await mockOrderService.getById(id);
-          if (mock) {
-            const normalized: Order = {
-              _id: mock._id,
-              createdAt: mock.createdAt,
-              totalPrice: mock.totalPrice,
-              status: mock.status,
-              orderItems: mock.orderItems.map((it: any) => ({
-                product: { name: it.product?.name || 'Item', images: it.product?.images || [] },
-                quantity: it.quantity,
-                price: it.price,
-              })),
-              shippingAddress: {
-                street: mock.shippingAddress.street,
-                city: mock.shippingAddress.city,
-                state: mock.shippingAddress.state,
-                zipCode: mock.shippingAddress.zipCode,
-                country: mock.shippingAddress.country || '',
-              },
-              paymentMethod: mock.paymentMethod || 'card',
-              isPaid: true,
-              paidAt: mock.createdAt,
-              deliveredAt: undefined,
-            };
-            if (isMounted) setCurrentOrder(normalized);
-          } else {
-            if (isMounted) setCurrentOrder(null);
-          }
-        } catch {
-          if (isMounted) setCurrentOrder(null);
-        }
+        // API call failed, set order to null
+        console.error('Failed to fetch order:', error);
+        if (isMounted) setCurrentOrder(null);
       } finally {
         if (isMounted) setIsLoading(false);
       }

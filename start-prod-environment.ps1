@@ -7,17 +7,17 @@ $env:REACT_APP_ENV = "production"
 
 # Build frontend for production
 Write-Host "🏗️ Building Frontend for Production..." -ForegroundColor Red
-cd "c:/Users/dell/OneDrive/Desktop/nexttechfusiongadgets/frontend"
+cd "c:/Users/sachi/Desktop/next-tech/frontend"
 cp .env.production .env
 npm run build:prod
 
 # Start backend in production mode
 Write-Host "📡 Starting Backend (Production)..." -ForegroundColor Red
-Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd 'c:/Users/dell/OneDrive/Desktop/nexttechfusiongadgets/backend'; cp .env.production .env; npm start"
+Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd 'c:/Users/sachi/Desktop/next-tech/backend'; cp .env.production .env; npm start"
 
 # Serve frontend build
 Write-Host "🌐 Serving Frontend (Production Build)..." -ForegroundColor Red
-Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd 'c:/Users/dell/OneDrive/Desktop/nexttechfusiongadgets/frontend'; npx serve -s build -l 3000"
+Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd 'c:/Users/sachi/Desktop/next-tech/frontend'; npx serve -s build -l 3000"
 
 Write-Host "✅ Production environment started!" -ForegroundColor Red
 Write-Host "Backend: http://localhost:5000" -ForegroundColor Cyan
