@@ -42,9 +42,8 @@ const CALLBACK = process.env.PAYTM_CALLBACK;
 // Connect to database
 connectDB();
 
-// Initialize cache service with Redis fallback
-const FallbackCacheService = require('./services/fallbackCacheService');
-const cacheService = new FallbackCacheService();
+// Initialize cache service
+const cacheService = require('./services/cacheService');
 
 // Respect Redis disable flags; skip test entirely when disabled
 if (process.env.DISABLE_REDIS === 'true' || process.env.REDIS_DISABLED === 'true') {
@@ -154,9 +153,9 @@ app.use(sanitizeInput);
 app.use(passport.initialize());
 
 // Six Sigma: Control - Apply rate limiting to different route groups
-// Use fallback auth routes that work with or without MongoDB
-app.use('/api/auth', rateLimits.auth, require('./routes/authRoutesFallback'));
-app.use('/api/products', rateLimits.api, require('./routes/productRoutesFallback'));
+// Use real routes only (no mock/fallback)
+app.use('/api/auth', rateLimits.auth, require('./routes/authRoutes'));
+app.use('/api/products', rateLimits.api, require('./routes/productRoutes'));
 app.use('/api/categories', rateLimits.api, require('./routes/categoryRoutes'));
 app.use('/api/cart', rateLimits.api, require('./routes/cartRoutes'));
 app.use('/api/wishlist', rateLimits.api, require('./routes/wishlistRoutes'));

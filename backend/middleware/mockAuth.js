@@ -1,157 +1,147 @@
-const jwt = require('jsonwebtoken');
+// Mock authentication middleware for development/testing when MongoDB is unavailable
 
-// Mock user database (same as in mockAuthController)
-const mockUsers = [
-  {
-    _id: 'mock_user_1',
-    id: 'mock_user_1',
-    name: 'Test User',
-    email: 'test@example.com',
-    password: 'testpassword',
-    role: 'customer',
-    isVerified: true,
-    phone: '+1234567890',
-    createdAt: new Date(),
-    preferences: {
-      notifications: {
-        email: true,
-        sms: false,
-        push: true
-      }
-    }
-  },
-  // Add demo user for frontend compatibility
-  {
-    _id: 'demo_user_123',
-    id: 'demo_user_123',
-    name: 'Demo User',
-    email: 'test@example.com',
-    password: 'testpassword',
-    role: 'customer',
-    isVerified: true,
-    phone: '+1234567890',
-    createdAt: new Date(),
-    preferences: {
-      notifications: {
-        email: true,
-        sms: false,
-        push: true
-      }
-    }
-  },
-  {
-    _id: 'mock_admin_1',
-    id: 'mock_admin_1',
-    name: 'Admin User',
-    email: 'admin@example.com',
-    password: 'adminpassword',
-    role: 'admin',
-    isVerified: true,
-    phone: '+1234567891',
-    createdAt: new Date(),
-    preferences: {
-      notifications: {
-        email: true,
-        sms: true,
-        push: true
-      }
-    }
-  },
-  {
-    _id: 'mock_google_user',
-    id: 'mock_google_user',
-    name: 'Google User',
-    email: 'googleuser@gmail.com',
-    role: 'customer',
-    isVerified: true,
-    authProvider: 'google',
-    createdAt: new Date()
-  }
-];
-
-const auth = async (req, res, next) => {
+const mockAuth = (req, res, next) => {
+  // Check for mock token in header
   let token;
 
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
-    try {
-      token = req.headers.authorization.split(' ')[1];
-      
-      // Handle demo tokens (fallback for frontend demo login)
-      if (token.startsWith('demo_token_') || token.startsWith('mock_')) {
-        console.log('🔄 Using demo/mock token fallback');
-        // Use the default test user for demo/mock tokens
-        const user = mockUsers.find(u => u.email === 'test@example.com');
-        if (user) {
-          const { password, ...userWithoutPassword } = user;
-          req.user = userWithoutPassword;
-          return next();
+    token = req.headers.authorization.split(' ')[1];
+  }
+
+  // In mock mode, we accept any token that starts with 'mock-jwt-token-'
+  if (token && token.startsWith('mock-jwt-token-')) {
+    // Extract user ID from mock token
+    const userId = token.split('-')[3]; // mock-jwt-token-{userId}-{timestamp}
+
+    // Mock user object
+    req.user = {
+      _id: userId || 'mock-user-1',
+      name: 'Mock User',
+      email: 'mock@example.com',
+      role: 'customer',
+      isVerified: true,
+      preferences: {
+        notifications: {
+          email: true,
+          sms: false,
+          push: true
+        },
+        privacy: {
+          profileVisible: false,
+          dataSharing: false
         }
       }
-      
-      // Try to verify as JWT token
-      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret_key');
-      
-      // Find user in mock database
-      const user = mockUsers.find(u => u._id === decoded.id || u.id === decoded.id);
-      
-      if (!user) {
-        return res.status(401).json({ message: 'User not found' });
-      }
-      
-      // Remove password from user object
-      const { password, ...userWithoutPassword } = user;
-      req.user = userWithoutPassword;
-      
-      next();
-    } catch (error) {
-      console.error('Auth error:', error.message);
-      return res.status(401).json({ message: 'Not authorized, token failed' });
-    }
+    };
+
+    return next();
   }
 
-  if (!token) {
-    return res.status(401).json({ message: 'Not authorized, no token' });
+  // Check for token in cookies as fallback
+  if (req.cookies && req.cookies.refreshToken && req.cookies.refreshToken.startsWith('mock-refresh-token-')) {
+    const userId = req.cookies.refreshToken.split('-')[3];
+
+    req.user = {
+      _id: userId || 'mock-user-1',
+      name: 'Mock User',
+      email: 'mock@example.com',
+      role: 'customer',
+      isVerified: true,
+      preferences: {
+        notifications: {
+          email: true,
+          sms: false,
+          push: true
+        },
+        privacy: {
+          profileVisible: false,
+          dataSharing: false
+        }
+      }
+    };
+
+    return next();
   }
+
+  // If no valid token, return unauthorized
+  return res.status(401).json({
+    success: false,
+    error: {
+      type: 'AUTHENTICATION_ERROR',
+      message: 'Not authorized, no valid token (Mock Mode)',
+      timestamp: new Date().toISOString()
+    }
+  });
 };
 
-const adminAuth = (req, res, next) => {
+const mockAdminAuth = (req, res, next) => {
   if (req.user && req.user.role === 'admin') {
     next();
   } else {
-    res.status(401).json({ message: 'Not authorized as admin' });
+    res.status(401).json({
+      success: false,
+      error: {
+        type: 'AUTHORIZATION_ERROR',
+        message: 'Not authorized as admin (Mock Mode)',
+        timestamp: new Date().toISOString()
+      }
+    });
   }
 };
 
-const seller = (req, res, next) => {
+const mockSeller = (req, res, next) => {
   if (req.user && (req.user.role === 'seller' || req.user.role === 'admin')) {
     next();
   } else {
-    res.status(401).json({ message: 'Not authorized as seller' });
+    res.status(401).json({
+      success: false,
+      error: {
+        type: 'AUTHORIZATION_ERROR',
+        message: 'Not authorized as seller (Mock Mode)',
+        timestamp: new Date().toISOString()
+      }
+    });
   }
 };
 
-const optional = async (req, res, next) => {
+const mockOptional = (req, res, next) => {
+  // Try to authenticate, but continue even if it fails
   let token;
 
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
-    try {
-      token = req.headers.authorization.split(' ')[1];
-      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret_key');
-      
-      // Find user in mock database
-      const user = mockUsers.find(u => u._id === decoded.id || u.id === decoded.id);
-      
-      if (user) {
-        const { password, ...userWithoutPassword } = user;
-        req.user = userWithoutPassword;
+    token = req.headers.authorization.split(' ')[1];
+  }
+
+  if (token && token.startsWith('mock-jwt-token-')) {
+    const userId = token.split('-')[3];
+
+    req.user = {
+      _id: userId || 'mock-user-1',
+      name: 'Mock User',
+      email: 'mock@example.com',
+      role: 'customer',
+      isVerified: true,
+      preferences: {
+        notifications: {
+          email: true,
+          sms: false,
+          push: true
+        },
+        privacy: {
+          profileVisible: false,
+          dataSharing: false
+        }
       }
-    } catch (error) {
-      // Token is invalid, but we continue without user
-      req.user = null;
-    }
+    };
+  } else {
+    req.user = null;
   }
 
   next();
 };
 
-module.exports = { auth, adminAuth, seller, optional };
+module.exports = {
+  auth: mockAuth,
+  adminAuth: mockAdminAuth,
+  seller: mockSeller,
+  optional: mockOptional
+};

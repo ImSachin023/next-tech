@@ -26,8 +26,7 @@ class AIInventoryService {
       
       // Check if MongoDB is available before proceeding
       if (mongoose.connection.readyState !== 1) {
-        console.log('⚠️  MongoDB not available, using mock AI inventory data');
-        this.initializeMockData();
+        console.warn('⚠️  MongoDB not available, skipping AI inventory initialization (no mock fallback)');
         return;
       }
       
@@ -46,8 +45,7 @@ class AIInventoryService {
       console.log('✅ AI Inventory System initialized successfully');
     } catch (error) {
       console.error('❌ AI Inventory System initialization failed:', error);
-      console.log('🔄 Falling back to mock AI inventory data');
-      this.initializeMockData();
+      console.warn('AI Inventory will remain inactive until MongoDB is available.');
     }
   }
 
@@ -925,56 +923,7 @@ class AIInventoryService {
     return categoryPerformance;
   }
 
-  // Initialize mock data when MongoDB is not available
-  initializeMockData() {
-    console.log('🔄 Initializing mock AI inventory data...');
-    
-    // Create mock demand forecasts for sample products
-    const mockProductIds = ['mock_product_1', 'mock_product_2', 'mock_product_3'];
-    
-    mockProductIds.forEach(productId => {
-      // Generate mock forecast data
-      const forecast = {
-        productId,
-        forecast: [],
-        accuracy: 0.85,
-        confidence: 0.9,
-        lastUpdated: new Date()
-      };
-      
-      // Generate 30 days of mock forecast data
-      for (let i = 0; i < 30; i++) {
-        const date = new Date();
-        date.setDate(date.getDate() + i);
-        
-        forecast.forecast.push({
-          date: date.toISOString().split('T')[0],
-          predicted: Math.floor(Math.random() * 50) + 10, // 10-60 units
-          confidence: 0.8 + Math.random() * 0.2, // 0.8-1.0
-          trend: Math.random() > 0.5 ? 'increasing' : 'stable'
-        });
-      }
-      
-      this.demandForecasts.set(productId, forecast);
-      
-      // Mock seasonal patterns
-      this.seasonalPatterns.set(productId, {
-        monthly: Array.from({length: 12}, () => 0.8 + Math.random() * 0.4),
-        weekly: Array.from({length: 7}, () => 0.8 + Math.random() * 0.4),
-        quarterly: Array.from({length: 4}, () => 0.8 + Math.random() * 0.4)
-      });
-      
-      // Mock reorder points
-      this.reorderPoints.set(productId, {
-        reorderPoint: Math.floor(Math.random() * 20) + 5, // 5-25 units
-        safetyStock: Math.floor(Math.random() * 10) + 2, // 2-12 units
-        eoq: Math.floor(Math.random() * 100) + 50, // 50-150 units
-        leadTime: Math.floor(Math.random() * 7) + 3 // 3-10 days
-      });
-    });
-    
-    console.log('✅ Mock AI inventory data initialized successfully');
-  }
+  // Mock initialization removed - no mock fallback
 }
 
 module.exports = new AIInventoryService();

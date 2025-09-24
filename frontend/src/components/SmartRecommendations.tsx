@@ -292,87 +292,9 @@ const SmartRecommendations: React.FC<SmartRecommendationsProps> = ({
               </div>
             </div>
 
-            {/* Products Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {recommendations[activeSection].products.map((product, productIndex) => (
-                <motion.div
-                  key={product._id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: productIndex * 0.1 }}
-                  className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-lg transition-all duration-200 group"
-                >
-                  {/* Product Image */}
-                  <div className="aspect-square bg-gray-100 rounded-lg mb-4 overflow-hidden relative">
-                    <img
-                      src={product.images[0]?.url || '/placeholder-product.jpg'}
-                      alt={product.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
-                    />
-                    
-                    {/* Quick Actions */}
-                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                      <button
-                        type="button"
-                        onClick={() => handleToggleWishlist(product._id)}
-                        className={`p-2 rounded-full backdrop-blur-sm transition-colors ${
-                          isInWishlist(product._id)
-                            ? 'bg-red-500 text-white'
-                            : 'bg-white bg-opacity-80 text-gray-600 hover:bg-red-50 hover:text-red-600'
-                        }`}
-                        aria-label={`${isInWishlist(product._id) ? 'Remove from' : 'Add to'} wishlist`}
-                      >
-                        <Heart className={`h-4 w-4 ${isInWishlist(product._id) ? 'fill-current' : ''}`} />
-                      </button>
-                    </div>
-
-                    {/* Discount Badge */}
-                    {product.discount && product.discount > 0 && (
-                      <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded text-xs font-bold">
-                        {product.discount}% OFF
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Product Info */}
-                  <div className="space-y-2">
-                    <h4 className="font-medium text-gray-900 line-clamp-2 group-hover:text-purple-600 transition-colors">
-                      {product.name}
-                    </h4>
-                    
-                    {/* Rating */}
-                    <div className="flex items-center space-x-1">
-                      <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                      <span className="text-sm font-medium">{product.rating}</span>
-                      <span className="text-sm text-gray-500">({product.numReviews})</span>
-                    </div>
-
-                    {/* Price */}
-                    <div className="flex items-center space-x-2">
-                      <span className="text-lg font-bold text-gray-900">
-                        ₹{product.price.toLocaleString()}
-                      </span>
-                      {product.originalPrice && product.originalPrice > product.price && (
-                        <span className="text-sm text-gray-500 line-through">
-                          ₹{product.originalPrice.toLocaleString()}
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Add to Cart Button */}
-                    <motion.button
-                      type="button"
-                      onClick={() => handleAddToCart(product)}
-                      className="w-full bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-700 transition-colors flex items-center justify-center space-x-2 opacity-0 group-hover:opacity-100"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      <ShoppingCart className="h-4 w-4" />
-                      <span>Add to Cart</span>
-                    </motion.button>
-                  </div>
-                </motion.div>
-              ))}
+            {/* Products Grid (hidden) */}
+            <div className="py-8 text-center text-gray-500">
+              {/* Product cards hidden */}
             </div>
 
             {/* Algorithm Info */}

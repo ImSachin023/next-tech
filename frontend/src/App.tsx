@@ -47,8 +47,6 @@ import PaymentTestPage from './pages/PaymentTestPage';
 import PaymentMethodsDebug from './components/PaymentMethodsDebug';
 import PaymentDebugPage from './pages/PaymentDebugPage';
 import PaymentPage from './pages/PaymentPage';
-import PaymentTestLink from './components/PaymentTestLink';
-import QuickLogin from './components/QuickLogin';
 import OrderTrackingPage from './pages/OrderTrackingPage';
 
 
@@ -233,12 +231,6 @@ function App() {
           </ErrorBoundary>
           <ErrorBoundary>
             <EnvironmentInfo />
-          </ErrorBoundary>
-          <ErrorBoundary>
-            <PaymentTestLink />
-          </ErrorBoundary>
-          <ErrorBoundary>
-            <QuickLogin />
           </ErrorBoundary>
           {/* Debug components removed for cleaner UI */}
           <Toaster
